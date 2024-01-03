@@ -42,6 +42,7 @@ $color3 : rgb(0, 104, 136);
 
 @import "./home.scss";
 @import "./cart.scss";
+@import "./shipping.scss";
 
 .header {
     @include flex(row, flex-end, stretch, 1.2rem);
@@ -76,6 +77,7 @@ $color3 : rgb(0, 104, 136);
         position: absolute;
         left: calc(100% - 10rem);
         top: 8%;
+        z-index: 99;
 
         >div {
             @include flex(column, flex-start, center, 0.25rem)
