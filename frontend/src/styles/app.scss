@@ -45,6 +45,26 @@ $color3 : rgb(0, 104, 136);
 @import "./shipping.scss";
 @import "./login.scss";
 @import "./search.scss";
+@import "./orders.scss";
+
+.container {
+    max-width: 1370px;
+    width: 100%;
+    margin: auto;
+    overflow: auto;
+
+    >h1 {
+        @include heading;
+        margin: 1rem 0;
+        text-align: left;
+    }
+}
+
+.heading {
+    @include heading;
+    margin: 1rem 0;
+    text-align: center;
+}
 
 .header {
     @include flex(row, flex-end, stretch, 1.2rem);
@@ -86,12 +106,6 @@ $color3 : rgb(0, 104, 136);
         }
     }
 
-}
-
-.heading {
-    @include heading;
-    margin: 1rem 0;
-    text-align: center;
 }
 
 .admin-container {
