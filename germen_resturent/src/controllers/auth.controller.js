@@ -1,41 +1,53 @@
 import bcrypt from "bcrypt";
+import { User } from "../models/user.model.js";
 
-const getUsers = async (req, res) => {
+const createUser = async (req, res) => {
+
     try {
-        const existingUser = await User.find({ email: req.body.email });
+        const { email, password, userName } = req.body;
+        const existingUser = await User.findOne({ email });
 
-        if (!existingUser) {
+        if (existingUser) {
+            return res.status(400).json({ error: "User with this email already exists." });
+        }
 
-            const saltRound = 10;
-            const newUser = req.body;
-            bcrypt.genSalt(saltRound, (err, salt) => {
-                if (err) {
-                    console.error(err);
-                    return res.status(500).json({
-                        error: "An error occurred while generating the salt.",
-                    });
-                }
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-                bcrypt.hash(newUser.password, salt, (err, hash) => {
-                    if (err) {
-                        console.error(err);
-                        return res.status(500).json({
-                            error: "An error occurred while hashing the password.",
-                        });
-                    }
+        const newUser = new User({ email, password: hashedPassword, userName });
+        const userCreated = await newUser.save();
 
-                    newUser.password = hash;
-                });
-             
-            });
-            const user = new User(newUser);
-            const userCreated = await user.save()
-            
+        res.status(201).json(userCreated);
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+};
+
+const loginUser = async (req, res) => {
+    
+    try {
+        const { email, password } = req.body;
+
+        const userLogin = await User.findOne({ email });
+
+        if (!userLogin) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        const isPasswordValid = await bcrypt.compare(password, userLogin.password);
+
+        if (isPasswordValid) {
+            res.status(200).json({ message: "User login successfully", userLogin });
+        } else {
+            res.status(401).json({ error: "Invalid password" });
         }
     } catch (err) {
-        console.log(err);
+        console.error(err);
+        res.status(500).json({ error: "Internal Server Error" });
     }
 };
 
 
-export { getUsers };
+export { createUser, loginUser };

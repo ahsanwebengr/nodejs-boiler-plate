@@ -1,22 +1,22 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 const userSchema = new mongoose.Schema({
-    userName:{
-        type:String,
-        required:[true,"User name required"]
+    userName: {
+        type: String,
+        required: [true, "User name required"]
     },
-    email:{
+    email: {
         type: String,
         required: [true, "User name required"],
         unique: [true, "Email  already in use"],
         lowercase: [true, "Invalid email"],
         trim: [true, "Space not allow"],
-        
+
     },
-    password:{
+    password: {
         type: String,
         required: [true, "Password required"],
-        min :[8,"Password should be at least 8 characters"],
+        min: [8, "Password should be at least 8 characters"],
         max: [16, "Password should not upto 16 characters"]
     },
     orders: [
@@ -31,4 +31,11 @@ const userSchema = new mongoose.Schema({
             ref: "Favorite"
         }
     ],
-})
+}, {
+    timestamps: true
+});
+
+
+const User = mongoose.model('User', userSchema);
+
+export { User };
