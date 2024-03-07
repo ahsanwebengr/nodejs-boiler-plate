@@ -26,10 +26,9 @@ const createUser = async (req, res) => {
 };
 
 const loginUser = async (req, res) => {
-    
+
     try {
         const { email, password } = req.body;
-
         const userLogin = await User.findOne({ email });
 
         if (!userLogin) {
@@ -47,6 +46,14 @@ const loginUser = async (req, res) => {
         console.error(err);
         res.status(500).json({ error: "Internal Server Error" });
     }
+};
+
+const forgotPassword = async (req, res) => {
+try {
+    
+} catch (err) {
+    
+}
 };
 
 
