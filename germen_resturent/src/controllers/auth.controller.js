@@ -2,6 +2,8 @@ import bcrypt from 'bcrypt';
 import { User } from '../models/user.model.js';
 import { transporter } from '../senders/emailSend.js';
 import { generateOTP } from '../utils/otp.js';
+import { ApiResponse } from '../utils/ApiResponse.js';
+import { ApiError } from '../utils/ApiError.js';
 
 const createUser = async (req, res) => {
   try {
@@ -9,9 +11,7 @@ const createUser = async (req, res) => {
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
-      return res
-        .status(400)
-        .json({ error: 'User with this email already exists.', success: false });
+      throw new ApiError(400, 'User with this email already exists.');
     }
 
     const saltRounds = 10;
@@ -20,10 +20,12 @@ const createUser = async (req, res) => {
     const newUser = new User({ email, password: hashedPassword, userName });
     const userCreated = await newUser.save();
 
-    res.status(201).json({ userCreated, success: true });
+    return res
+      .status(201)
+      .json(new ApiResponse(201, userCreated, 'User registered Successfully'));
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Internal Server Error', success: false });
+    throw new ApiError(500, 'Internal Server Error');
   }
 };
 
@@ -33,21 +35,19 @@ const loginUser = async (req, res) => {
     const userLogin = await User.findOne({ email });
 
     if (!userLogin) {
-      return res.status(404).json({ error: 'User not found', success: false });
+      throw new ApiError(404, 'User not found');
     }
 
     const isPasswordValid = await bcrypt.compare(password, userLogin.password);
 
     if (isPasswordValid) {
-      res
-        .status(200)
-        .json({ message: 'User login successfully', userLogin, success: true });
+      res.status(200).json(new ApiResponse(200, userLogin, 'User login Successfully'));
     } else {
-      res.status(401).json({ error: 'Invalid password', success: false });
+      throw new ApiError(401, 'Invalid password');
     }
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Internal Server Error', success: false });
+    throw new ApiError(500, 'Internal Server Error');
   }
 };
 
@@ -57,7 +57,7 @@ const forgotPassword = async (req, res) => {
     let userEmail = await User.findOne({ email });
 
     if (!userEmail) {
-      res.status(404).json({ error: 'This email does not exist', success: false });
+      throw new ApiError(404, 'This email does not exist');
     }
 
     const otp = generateOTP(6);
@@ -79,13 +79,12 @@ const forgotPassword = async (req, res) => {
     };
 
     await transporter.sendMail(mailOptions);
-
     res
       .status(200)
-      .json({ message: 'OTP sent to your email for password reset', success: true });
+      .json(new ApiResponse(200, 'OTP sent to your email for password reset'));
   } catch (err) {
     console.log(err);
-    res.status(500).json({ error: 'Server Error', success: false });
+    throw new ApiError(500, 'Service error');
   }
 };
 
