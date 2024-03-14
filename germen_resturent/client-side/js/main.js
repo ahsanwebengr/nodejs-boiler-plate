@@ -114,10 +114,10 @@
   // Popular Deal Carousel
   $('.popular-deal-carousel').owlCarousel({
     autoplay: true,
-    smartSpeed: 1000,
+    autoplayTimeout: 4000,
+    smartSpeed: 600,
     autoplayHoverPause: true,
-    // center: true,
-    margin: 24,
+    margin: 35,
     dots: false,
     loop: true,
     nav: true,
