@@ -2,6 +2,7 @@
 :root {
     --primary: #FEA116;
     --light: #F1F8FF;
+    --white: #ffff;
     --dark: #0F172B;
 }
 
@@ -179,6 +180,28 @@
     color: var(--primary);
     font-size: 26px;
 }
+
+.product__description {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.card_bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 5px;
+    flex-wrap: wrap;
+}
+
+.popular-deal__card {
+    transition: all 0.4s ease-in;
+    height: auto;
+    background-color: var(--white);
+}
+
 
 /*** Hero Header ***/
 .hero-header {
