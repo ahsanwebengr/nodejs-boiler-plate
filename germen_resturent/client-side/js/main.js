@@ -121,6 +121,9 @@
     dots: false,
     loop: true,
     nav: true,
+    navText: ["<i class='fas fa-arrow-left'></i>", "<i class='fas fa-arrow-right'></i>"],
+    animateOut: 'fadeOut',
+    animateIn: 'fadeIn',
     responsive: {
       0: {
         items: 1,
