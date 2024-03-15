@@ -157,6 +157,7 @@
 /* CART  */
 .cart {
     position: relative;
+    cursor: pointer;
 }
 
 .cart .cart__count {
@@ -181,7 +182,7 @@
     font-size: 26px;
 }
 
-.product__description {
+.clamp-line-3 {
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
@@ -196,10 +197,43 @@
     flex-wrap: wrap;
 }
 
+.menu_image {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+}
+
 .popular-deal__card {
     transition: all 0.4s ease-in;
     height: auto;
     background-color: var(--white);
+}
+
+.popular-deal__card img {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+}
+
+.popular-deal-carousel .owl-nav {
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.popular-deal-carousel .owl-nav .owl-prev,
+.popular-deal-carousel .owl-nav .owl-next {
+    width: 45px;
+    height: 45px;
+    font-size: 22px;
+    background-color: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    color: var(--white);
 }
 
 
