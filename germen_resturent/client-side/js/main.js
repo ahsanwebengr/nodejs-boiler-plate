@@ -114,7 +114,7 @@
   // Popular Deal Carousel
   $('.popular-deal-carousel').owlCarousel({
     autoplay: true,
-    autoplayTimeout: 4000,
+    autoplayTimeout: 2500,
     smartSpeed: 600,
     autoplayHoverPause: true,
     margin: 35,
