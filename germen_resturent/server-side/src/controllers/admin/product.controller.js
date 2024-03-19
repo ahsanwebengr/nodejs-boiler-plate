@@ -1,6 +1,6 @@
-import { Product } from '../models/product.model.js';
-import { ApiError } from '../utils/ApiError.js';
-import { ApiResponse } from '../utils/ApiResponse.js';
+import { Product } from '../../models/admin/product.model.js';
+import { ApiError } from '../../utils/ApiError.js';
+import { ApiResponse } from '../../utils/ApiResponse.js';
 
 const createProduct = async (req, res) => {
   try {
@@ -44,7 +44,15 @@ const singleProduct = async (req, res) => {
     res.status(200).json(new ApiResponse(200, product, 'Product Data'));
   } catch (err) {
     console.log(err);
-    throw new ApiError(500, 'Some error occurred while getting single product');
+    if (err instanceof ApiError) {
+      return res
+        .status(err.statusCode)
+        .json(new ApiResponse(err.statusCode, null, err.message));
+    } else {
+      return res
+        .status(500)
+        .json(new ApiResponse(500, null, 'Some error occurred while fetching product'));
+    }
   }
 };
 
@@ -63,13 +71,24 @@ const updateProduct = async (req, res) => {
     };
 
     const product = await Product.findByIdAndUpdate(id, updateData);
+    console.log(product, '=> PRODUCT', id, '=> ID');
     if (!product) {
       throw new ApiError(404, 'Product not found');
     }
     res.status(200).json(new ApiResponse(200, product, 'Product Updated Successfully'));
   } catch (err) {
     console.log(err);
-    throw new ApiError(500, 'Some error occurred while updating the product');
+    if (err instanceof ApiError) {
+      return res
+        .status(err.statusCode)
+        .json(new ApiResponse(err.statusCode, null, err.message));
+    } else {
+      return res
+        .status(500)
+        .json(
+          new ApiResponse(500, null, 'Some error occurred while updating the product')
+        );
+    }
   }
 };
 

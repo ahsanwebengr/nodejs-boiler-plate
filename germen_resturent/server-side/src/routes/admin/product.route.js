@@ -5,11 +5,11 @@ import {
   singleProduct,
   updateProduct,
   deleteProduct,
-} from '../controllers/product.controller.js';
-
+} from '../../controllers/admin/product.controller.js';
+import { fileUpload } from '../../middlewares/multer.js';
 const router = Router();
 
-router.post('/addProduct', createProduct);
+router.post('/addProduct',fileUpload, createProduct);
 router.get('/getProducts', allProducts);
 router.get('/getProducts/:id', singleProduct);
 router.put('/editProduct/:id', updateProduct);

@@ -5,7 +5,7 @@ const app = express();
 
 // Routes Imports 
 import authRoutes from "././src/routes/auth.route.js";
-import productRoutes from './src/routes/product.route.js';
+import productRoutes from './src/routes/admin/product.route.js';
 
 // App Middlewares 
 app.use(cors());
@@ -15,6 +15,6 @@ app.use(express());
 
 // Route Middlewares 
 app.use("/api/auth", authRoutes);
-app.use("/api", productRoutes);
+app.use("/api/admin", productRoutes);
 
 export { app };
