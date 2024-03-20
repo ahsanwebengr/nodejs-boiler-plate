@@ -3,6 +3,8 @@ import { ApiError } from '../../utils/ApiError.js';
 import { ApiResponse } from '../../utils/ApiResponse.js';
 
 const createProduct = async (req, res) => {
+    console.log("🚀 ~ createProduct ~ req:", req.file.filename);
+    
   try {
     const { name, unitPrice, description, category, imageUrl, size, discount } = req.body;
 
@@ -18,7 +20,9 @@ const createProduct = async (req, res) => {
       imageUrl,
       size,
       discount,
+      
     };
+    productData.imageUrl = req.file.filename || '';
     const newProduct = await Product.create(productData);
     res.status(201).json(new ApiResponse(201, newProduct, 'Product created successfully'));
   } catch (err) {

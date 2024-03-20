@@ -17,9 +17,9 @@ const productSchema = new Schema(
     },
     category: {
       type: String,
-      enum: ['Burger', 'Pizza', 'Drink', 'Fries', 'Other'],
       required: [true, 'Category is required'],
-      default: 'Other',
+      //   enum: ['Burger', 'Pizza', 'Drink', 'Fries', 'Other'],
+      //   default: 'Other',
     },
     imageUrl: {
       type: String,
@@ -32,6 +32,10 @@ const productSchema = new Schema(
     discount: {
       type: Number,
       default: 0,
+    },
+    popular: {
+      type: Boolean,
+      default: false,
     },
   },
   {
