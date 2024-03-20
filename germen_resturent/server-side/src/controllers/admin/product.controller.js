@@ -10,17 +10,21 @@ const createProduct = async (req, res) => {
       throw new ApiError(400, 'All fields are required');
     }
 
-    const productData = { name, unitPrice, description, category, imageUrl, size, discount };
+    const productData = {
+      name,
+      unitPrice,
+      description,
+      category,
+      imageUrl,
+      size,
+      discount,
+    };
     const newProduct = await Product.create(productData);
-    res
-      .status(201)
-      .json(new ApiResponse(201, newProduct, 'Product created successfully'));
+    res.status(201).json(new ApiResponse(201, newProduct, 'Product created successfully'));
   } catch (err) {
     console.log(err);
     if (err instanceof ApiError) {
-      return res
-        .status(err.statusCode)
-        .json(new ApiResponse(err.statusCode, null, err.message));
+      return res.status(err.statusCode).json(new ApiResponse(err.statusCode, null, err.message));
     } else {
       return res
         .status(500)
@@ -53,9 +57,7 @@ const singleProduct = async (req, res) => {
   } catch (err) {
     console.log(err);
     if (err instanceof ApiError) {
-      return res
-        .status(err.statusCode)
-        .json(new ApiResponse(err.statusCode, null, err.message));
+      return res.status(err.statusCode).json(new ApiResponse(err.statusCode, null, err.message));
     } else {
       return res
         .status(500)
@@ -86,15 +88,11 @@ const updateProduct = async (req, res) => {
   } catch (err) {
     console.log(err);
     if (err instanceof ApiError) {
-      return res
-        .status(err.statusCode)
-        .json(new ApiResponse(err.statusCode, null, err.message));
+      return res.status(err.statusCode).json(new ApiResponse(err.statusCode, null, err.message));
     } else {
       return res
         .status(500)
-        .json(
-          new ApiResponse(500, null, 'Some error occurred while updating the product')
-        );
+        .json(new ApiResponse(500, null, 'Some error occurred while updating the product'));
     }
   }
 };
@@ -106,19 +104,14 @@ const deleteProduct = async (req, res) => {
     if (!product) throw new ApiError(404, 'Product not found');
 
     res.status(200).json(new ApiResponse(200, product, 'Product deleted successfully'));
-    
   } catch (err) {
     console.log(err);
     if (err instanceof ApiError) {
-      return res
-        .status(err.statusCode)
-        .json(new ApiResponse(err.statusCode, null, err.message));
+      return res.status(err.statusCode).json(new ApiResponse(err.statusCode, null, err.message));
     } else {
       return res
         .status(500)
-        .json(
-          new ApiResponse(500, null, 'Error occurred while deleting product')
-        );
+        .json(new ApiResponse(500, null, 'Error occurred while deleting product'));
     }
   }
 };
