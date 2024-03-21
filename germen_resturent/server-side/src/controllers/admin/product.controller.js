@@ -2,9 +2,7 @@ import { Product } from '../../models/admin/product.model.js';
 import { ApiError } from '../../utils/ApiError.js';
 import { ApiResponse } from '../../utils/ApiResponse.js';
 
-const createProduct = async (req, res) => {
-    console.log("🚀 ~ createProduct ~ req:", req.file.filename);
-    
+const createProduct = async (req, res) => {    
   try {
     const { name, unitPrice, description, category, imageUrl, size, discount } = req.body;
 

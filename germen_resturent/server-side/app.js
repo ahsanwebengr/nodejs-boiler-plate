@@ -15,6 +15,7 @@ app.use(bodyParser.json());
 app.use(express());
 
 // Route Middlewares
+// app.use('api', index);
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', productRoutes);
 app.use('/api/user', orderRoutes);
