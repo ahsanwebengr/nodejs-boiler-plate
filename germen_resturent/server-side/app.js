@@ -20,7 +20,11 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.get('/api/client', (req, res) => {
-  res.render('index');
+  res.render('client/index');
+});
+
+app.get('/api/admin', (req, res) => {
+  res.render('admin/index');
 });
 
 // Route Middlewares
