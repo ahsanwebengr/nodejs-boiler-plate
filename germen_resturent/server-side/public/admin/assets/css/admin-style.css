@@ -179,6 +179,10 @@ a:not([href]):not([class]):hover {
   text-decoration: none;
 }
 
+.cursor-pointer {
+    cursor: pointer;
+}
+
 pre,
 code,
 kbd,

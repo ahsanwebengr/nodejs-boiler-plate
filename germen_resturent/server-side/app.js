@@ -27,6 +27,18 @@ app.get('/api/admin', (req, res) => {
   res.render('admin/index');
 });
 
+app.get('/api/admin/product', (req, res) => {
+  res.render('admin/products/index');
+});
+
+app.get('/api/admin/product/create', (req, res) => {
+  res.render('admin/products/create');
+});
+
+app.get('/api/admin/product/update', (req, res) => {
+  res.render('admin/products/update');
+});
+
 // Route Middlewares
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', productRoutes);

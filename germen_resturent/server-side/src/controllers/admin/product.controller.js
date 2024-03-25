@@ -2,11 +2,11 @@ import { Product } from '../../models/admin/product.model.js';
 import { ApiError } from '../../utils/ApiError.js';
 import { ApiResponse } from '../../utils/ApiResponse.js';
 
-const createProduct = async (req, res) => {    
+const createProduct = async (req, res) => {
   try {
     const { name, unitPrice, description, category, imageUrl, size, discount } = req.body;
 
-    if (!name || !unitPrice || !description || !category) {
+    if (!name || !unitPrice || !description) {
       throw new ApiError(400, 'All fields are required');
     }
 
@@ -18,15 +18,18 @@ const createProduct = async (req, res) => {
       imageUrl,
       size,
       discount,
-      
     };
     productData.imageUrl = req.file.filename || '';
     const newProduct = await Product.create(productData);
-    res.status(201).json(new ApiResponse(201, newProduct, 'Product created successfully'));
+    res
+      .status(201)
+      .json(new ApiResponse(201, newProduct, 'Product created successfully'));
   } catch (err) {
     console.log(err);
     if (err instanceof ApiError) {
-      return res.status(err.statusCode).json(new ApiResponse(err.statusCode, null, err.message));
+      return res
+        .status(err.statusCode)
+        .json(new ApiResponse(err.statusCode, null, err.message));
     } else {
       return res
         .status(500)
@@ -59,7 +62,9 @@ const singleProduct = async (req, res) => {
   } catch (err) {
     console.log(err);
     if (err instanceof ApiError) {
-      return res.status(err.statusCode).json(new ApiResponse(err.statusCode, null, err.message));
+      return res
+        .status(err.statusCode)
+        .json(new ApiResponse(err.statusCode, null, err.message));
     } else {
       return res
         .status(500)
@@ -90,11 +95,15 @@ const updateProduct = async (req, res) => {
   } catch (err) {
     console.log(err);
     if (err instanceof ApiError) {
-      return res.status(err.statusCode).json(new ApiResponse(err.statusCode, null, err.message));
+      return res
+        .status(err.statusCode)
+        .json(new ApiResponse(err.statusCode, null, err.message));
     } else {
       return res
         .status(500)
-        .json(new ApiResponse(500, null, 'Some error occurred while updating the product'));
+        .json(
+          new ApiResponse(500, null, 'Some error occurred while updating the product')
+        );
     }
   }
 };
@@ -109,7 +118,9 @@ const deleteProduct = async (req, res) => {
   } catch (err) {
     console.log(err);
     if (err instanceof ApiError) {
-      return res.status(err.statusCode).json(new ApiResponse(err.statusCode, null, err.message));
+      return res
+        .status(err.statusCode)
+        .json(new ApiResponse(err.statusCode, null, err.message));
     } else {
       return res
         .status(500)
