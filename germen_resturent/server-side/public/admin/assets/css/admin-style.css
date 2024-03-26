@@ -183,6 +183,13 @@ a:not([href]):not([class]):hover {
     cursor: pointer;
 }
 
+.product__img {
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: 0.3rem;
+    overflow: hidden;
+}
+
 pre,
 code,
 kbd,

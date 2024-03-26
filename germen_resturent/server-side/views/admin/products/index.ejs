@@ -1,41 +1,61 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
+  <head>
     <%- include('../partials/head.ejs'); %>
-</head>
+  </head>
 
-<body id="page-top">
+  <body id="page-top">
     <!-- Page Wrapper -->
     <div id="wrapper">
-        <%- include('../partials/sidebar.ejs'); %>
-            <!-- Content Wrapper -->
-            <div id="content-wrapper" class="d-flex flex-column">
-                <!-- Main Content -->
-                <div id="content">
-                    <%- include('../partials/topbar.ejs'); %>
-                        <main class="container-fluid">
-                            <div class="row">
-                                <div class="col-md-4 mb-3">
-                                    <div class="card">
-                                        <img src="..." class="card-img-top" alt="...">
-                                        <div class="card-body">
-                                            <h5 class="card-title">Card title</h5>
-                                            <h6 class="card-title">Price: 2200€</h6>
-                                            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's
-                                                content.</p>
-                                            <a href="/api/admin/product/update" class="btn btn-primary">Update</a>
-                                            <a href="#" class="btn btn-danger">Delete</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </main>
-                </div>
-                <%- include('../partials/footer.ejs'); %>
-            </div>
+      <%- include('../partials/sidebar.ejs'); %>
+      <!-- Content Wrapper -->
+      <div id="content-wrapper" class="d-flex flex-column">
+        <!-- Main Content -->
+        <div id="content">
+          <%- include('../partials/topbar.ejs'); %>
+          <main class="container-fluid">
+            <div class="row" id="productRow"></div>
+          </main>
+        </div>
+        <%- include('../partials/footer.ejs'); %>
+      </div>
     </div>
     <%- include('../partials/scripts.ejs'); %>
-</body>
+    <script>
+      const productRowElm = document.getElementById('productRow');
+      const url = 'http://localhost:8080/api/admin/getProducts';
 
+      const getProducts = async () => {
+        try {
+          const response = await fetch(url);
+          const data = await response.json();
+          console.log(data);
+          productRowElm.innerHTML = '';
+          data?.data?.forEach(product => {
+            const { imageUrl, name, unitPrice, discount, category, description, _id } =
+              product;
+
+            productRowElm.innerHTML += `<div class="col-md-3 mb-3">
+                <div class="card">
+                  <img src="/uploads/products/${imageUrl}" class="product__img" alt="${name}" />
+                  <div class="card-body">
+                    <h5 class="card-title">${name}</h5>
+                    <h6 class="card-title">Price: ${unitPrice}€</h6>
+                    <p class="card-text">
+                     ${description}
+                    </p>
+                    <a href="/api/admin/product/update/${_id}" class="btn btn-primary">Update</a>
+                    <a href="#" class="btn btn-danger">Delete</a>
+                  </div>
+                </div>
+              </div>`;
+          });
+        } catch (error) {
+          console.log(error);
+        }
+      };
+
+      getProducts();
+    </script>
+  </body>
 </html>

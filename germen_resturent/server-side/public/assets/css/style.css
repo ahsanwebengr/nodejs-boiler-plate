@@ -188,6 +188,32 @@
     overflow: hidden;
 }
 
+.menu-card {
+    position: relative;
+}
+
+.discount-ribbon {
+    position: absolute;
+    top: 10px;
+    right: 0px;
+    background-color: rgb(19, 209, 19);
+    color: #fff;
+    padding: 5px 10px;
+    font-size: 14px;
+    border-radius: 5px;
+    z-index: 1;
+}
+
+.discount-ribbon::before {
+    content: "";
+    position: absolute;
+    top: 27px;
+    right: 0;
+    border-style: solid;
+    border-width: 0 10px 10px 0;
+    border-color: transparent rgb(19, 209, 19) transparent transparent;
+}
+
 .card_bottom {
     display: flex;
     align-items: center;

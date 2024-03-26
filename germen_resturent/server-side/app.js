@@ -35,8 +35,9 @@ app.get('/api/admin/product/create', (req, res) => {
   res.render('admin/products/create');
 });
 
-app.get('/api/admin/product/update', (req, res) => {
-  res.render('admin/products/update');
+app.get('/api/admin/product/update/:id', (req, res) => {
+  const { id } = req.params;
+  res.render('admin/products/update', { id });
 });
 
 // Route Middlewares
