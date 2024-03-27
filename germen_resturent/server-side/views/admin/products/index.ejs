@@ -2,27 +2,106 @@
 <html lang="en">
   <head>
     <%- include('../partials/head.ejs'); %>
+    <link
+      href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap4.min.css"
+      rel="stylesheet"
+    />
   </head>
 
   <body id="page-top">
-    <!-- Page Wrapper -->
     <div id="wrapper">
       <%- include('../partials/sidebar.ejs'); %>
+
       <!-- Content Wrapper -->
       <div id="content-wrapper" class="d-flex flex-column">
         <!-- Main Content -->
         <div id="content">
           <%- include('../partials/topbar.ejs'); %>
-          <main class="container-fluid">
-            <div class="row" id="productRow"></div>
-          </main>
+
+          <!-- Begin Page Content -->
+          <div class="container-fluid">
+            <!-- Page Heading -->
+            <h1 class="h3 mb-2 text-gray-800">Tables</h1>
+            <p class="mb-4">
+              DataTables is a third party plugin that is used to generate the demo table
+              below. For more information about DataTables, please visit the
+              <a target="_blank" href="https://datatables.net"
+                >official DataTables documentation</a
+              >.
+            </p>
+
+            <!-- DataTales Example -->
+            <div class="card shadow mb-4">
+              <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">DataTables Example</h6>
+              </div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table
+                    class="table table-bordered"
+                    id="dataTable"
+                    width="100%"
+                    cellspacing="0"
+                  >
+                    <thead>
+                      <tr>
+                        <th>Image</th>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th>Discount</th>
+                        <th>Category</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tfoot>
+                      <tr>
+                        <th>Image</th>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th>Discount</th>
+                        <th>Category</th>
+                        <th>Actions</th>
+                      </tr>
+                    </tfoot>
+                    <tbody id="tableBody"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <%- include('../partials/footer.ejs'); %>
+        <!-- Footer Section 
+        <%- include('../partials/footer.ejs'); %> -->
       </div>
     </div>
+
     <%- include('../partials/scripts.ejs'); %>
+
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap4.min.js"></script>
+
     <script>
-      const productRowElm = document.getElementById('productRow');
+      $(document).ready(function () {
+        $('#dataTable').DataTable({
+          paging: true, // Enable pagination
+          searching: true, // Enable searching
+          ordering: true, // Enable ordering
+          info: true, // Show table information (e.g., "Showing 1 to 10 of 57 entries")
+          responsive: true, // Enable responsive mode
+          lengthChange: false, // Disable the page length option
+          language: {
+            search: 'Search: ', // Change the search label
+            searchPlaceholder: 'Type keywords here...', // Change the search input placeholder
+            zeroRecords: 'No matching records found', // Message when no records found
+            infoEmpty: 'Showing 0 to 0 of 0 entries', // Message when no records to display
+            infoFiltered: '(filtered from _MAX_ total entries)', // Message when records are filtered
+          },
+        });
+      });
+    </script>
+
+    <script>
+      const tableBody = document.getElementById('tableBody');
       const url = 'http://localhost:8080/api/admin/getProducts';
 
       const getProducts = async () => {
@@ -30,25 +109,23 @@
           const response = await fetch(url);
           const data = await response.json();
           console.log(data);
-          productRowElm.innerHTML = '';
+          tableBody.innerHTML = '';
           data?.data?.forEach(product => {
             const { imageUrl, name, unitPrice, discount, category, description, _id } =
               product;
 
-            productRowElm.innerHTML += `<div class="col-md-3 mb-3">
-                <div class="card">
-                  <img src="/uploads/products/${imageUrl}" class="product__img" alt="${name}" />
-                  <div class="card-body">
-                    <h5 class="card-title">${name}</h5>
-                    <h6 class="card-title">Price: ${unitPrice}€</h6>
-                    <p class="card-text">
-                     ${description}
-                    </p>
-                    <a href="/api/admin/product/update/${_id}" class="btn btn-primary">Update</a>
-                    <a href="#" class="btn btn-danger">Delete</a>
-                  </div>
-                </div>
-              </div>`;
+            tableBody.innerHTML += `
+          <tr>
+            <td><img src="/uploads/products/${imageUrl}" class="product__img" alt="${name}" /></td>
+            <td>${name}</td>
+            <td>${unitPrice}€</td>
+            <td>${discount}</td>
+            <td>${category}</td>
+            <td>
+              <a href="/api/admin/product/update/${_id}" class="btn btn-primary">Update</a>
+              <a href="#" class="btn btn-danger">Delete</a>
+            </td>
+          </tr>`;
           });
         } catch (error) {
           console.log(error);

@@ -184,10 +184,10 @@ a:not([href]):not([class]):hover {
 }
 
 .product__img {
-    aspect-ratio: 1;
-    object-fit: cover;
-    border-radius: 0.3rem;
-    overflow: hidden;
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    border-radius: 5px;
 }
 
 pre,
