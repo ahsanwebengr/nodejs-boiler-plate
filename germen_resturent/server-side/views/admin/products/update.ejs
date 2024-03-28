@@ -21,7 +21,6 @@
                   <form
                     id="updateProductForm"
                     enctype="multipart/form-data"
-                    action="/api/admin/product/update/<%= id %>"
                     method="POST"
                   >
                     <div class="row">
@@ -30,60 +29,85 @@
                           <label class="form-label" for="productName">Product Name</label>
                           <input
                             type="text"
-                            value=""
+                            value="<%= data.name %>"
                             id="productName"
                             class="form-control"
+                            name="LOVE"
                           />
                         </div>
                       </div>
                       <div class="col-md-6">
                         <div class="mb-3">
                           <label class="form-label" for="price">Price €</label>
-                          <input type="number" id="price" class="form-control" />
+                          <input
+                            type="number"
+                            value="<%= data.unitPrice %>"
+                            name="<%= data.unitPrice %>"
+                            id="price"
+                            class="form-control"
+                          />
                         </div>
                       </div>
                       <div class="col-md-6">
                         <div class="mb-3">
                           <label class="form-label" for="discount">Discount €</label>
-                          <input type="number" id="discount" class="form-control" />
+                          <input
+                            type="number"
+                            value="<%= data.discount %>"
+                            name="<%= data.discount %>"
+                            id="discount"
+                            class="form-control"
+                          />
                         </div>
                       </div>
                       <div class="col-md-6">
                         <div class="mb-3">
                           <label class="form-label" for="category">Category</label>
                           <select id="category" class="form-control">
-                            <option value="pizza">Pizza</option>
-                            <option value="burger">Burger</option>
-                            <option value="fries">Fries</option>
-                          </select>
+                                <option value="pizza" <% if (data.category === 'pizza') { %> selected <% } %>>Pizza</option>
+                                <option value="burger" <% if (data.category === 'burger') { %> selected <% } %>>Burger</option>
+                                <option value="fries" <% if (data.category === 'fries') { %> selected <% } %>>Fries</option>
+                            </select>
                         </div>
                       </div>
                       <div class="col-md-6">
                         <div class="mb-3">
                           <label for="formFile" class="form-label">Image</label>
-                          <input class="form-control" type="file" id="formFile" />
+                          <input
+                            class="form-control"
+                            value="<%= data.imageUrl %>"
+                            name="<%= data.imageUrl %>"
+                            type="file"
+                            id="formFile"
+                          />
                         </div>
                       </div>
                       <div class="col-md-6">
                         <div class="mb-3">
-                          <label class="form-label" for="size">Size</label>
+                          <label
+                            class="form-label"
+                            value="<%= data.size %>"
+                            name="<%= data.size %>"
+                            for="size"
+                            >Size</label
+                          >
                           <select id="size" class="form-control">
-                            <option value="sm">Small</option>
-                            <option value="md">Medium</option>
-                            <option value="lg">Large</option>
-                          </select>
+                                <option value="sm" <% if (data.size === 'sm') { %> selected <% } %>>Small</option>
+                                <option value="md" <% if (data.size === 'md') { %> selected <% } %>>Medium</option>
+                                <option value="lg" <% if (data.size === 'lg') { %> selected <% } %>>Large</option>
+                            </select>
                         </div>
                       </div>
                       <div class="col-md-12">
                         <div class="mb-3">
                           <label class="form-label" for="description">Description</label>
                           <textarea
-                            name=""
+                            name="<%= data.unitPrice %>"
                             id="description"
                             cols="30"
                             rows="10"
                             class="form-control"
-                          ></textarea>
+                          > <%= data.description %></textarea>
                         </div>
                       </div>
                       <div class="col-md-6">
