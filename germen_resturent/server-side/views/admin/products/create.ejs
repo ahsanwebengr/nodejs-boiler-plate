@@ -64,6 +64,15 @@
                           </select>
                         </div>
                       </div>
+                      <div class="col-md-6">
+                        <div class="mb-3">
+                          <label class="form-label" for="size">Popular</label>
+                          <select id="popular" class="form-control">
+                            <option value="true">True</option>
+                            <option value="false">False</option>
+                          </select>
+                        </div>
+                      </div>
                       <div class="col-md-12">
                         <div class="mb-3">
                           <label class="form-label" for="description">Description</label>
@@ -108,6 +117,7 @@
         const imageFile = document.querySelector('#formFile').files[0];
         const description = document.querySelector('#description').value;
         const category = document.querySelector('#category').value;
+        const popular = document.querySelector('#popular').value;
 
         const formData = new FormData();
         formData.append('name', name);
@@ -116,6 +126,7 @@
         formData.append('img', imageFile);
         formData.append('description', description);
         formData.append('category', category);
+        formData.append('popular', popular);
 
         try {
           const response = await fetch('http://localhost:8080/api/admin/addProduct', {

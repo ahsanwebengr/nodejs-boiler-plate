@@ -20,20 +20,9 @@
 
           <!-- Begin Page Content -->
           <div class="container-fluid">
-            <!-- Page Heading -->
-            <h1 class="h3 mb-2 text-gray-800">Tables</h1>
-            <p class="mb-4">
-              DataTables is a third party plugin that is used to generate the demo table
-              below. For more information about DataTables, please visit the
-              <a target="_blank" href="https://datatables.net"
-                >official DataTables documentation</a
-              >.
-            </p>
-
-            <!-- DataTales Example -->
             <div class="card shadow mb-4">
               <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">DataTables Example</h6>
+                <h6 class="m-0 font-weight-bold text-primary">Products Table</h6>
               </div>
               <div class="card-body">
                 <div class="table-responsive">
@@ -50,6 +39,8 @@
                         <th>Price</th>
                         <th>Discount</th>
                         <th>Category</th>
+                        <th>Size</th>
+                        <th>Popular</th>
                         <th>Actions</th>
                       </tr>
                     </thead>
@@ -60,6 +51,8 @@
                         <th>Price</th>
                         <th>Discount</th>
                         <th>Category</th>
+                        <th>Size</th>
+                        <th>Popular</th>
                         <th>Actions</th>
                       </tr>
                     </tfoot>
@@ -111,8 +104,17 @@
           console.log(data);
           tableBody.innerHTML = '';
           data?.data?.forEach(product => {
-            const { imageUrl, name, unitPrice, discount, category, description, _id } =
-              product;
+            const {
+              imageUrl,
+              name,
+              unitPrice,
+              discount,
+              category,
+              description,
+              _id,
+              size,
+              popular,
+            } = product;
 
             tableBody.innerHTML += `
           <tr>
@@ -121,9 +123,15 @@
             <td>${unitPrice}€</td>
             <td>${discount}</td>
             <td>${category}</td>
+            <td>${size}</td>
+            <td>${popular}</td>
             <td>
-              <a href="/api/admin/product/get/${_id}" class="btn btn-primary">Update</a>
-              <a href="#" class="btn btn-danger">Delete</a>
+            <a href="/api/admin/product/get/${_id}" class="btn btn-primary">
+                <i class="far fa-edit"></i>
+            </a>
+            <a href="#" class="btn btn-danger">
+                <i class="fas fa-trash"></i>    
+            </a>
             </td>
           </tr>`;
           });

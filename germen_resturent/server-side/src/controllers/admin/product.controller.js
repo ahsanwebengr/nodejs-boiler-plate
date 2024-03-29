@@ -86,6 +86,7 @@ const updateProduct = async (req, res) => {
       description,
       size,
     };
+    console.log('🚀 ~ updateProduct ~ updateData:', req.body);
 
     const product = await Product.findByIdAndUpdate(id, updateData);
     if (!product) {
