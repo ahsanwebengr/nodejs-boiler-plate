@@ -18,7 +18,7 @@
               <div class="col-12">
                 <div class="card bg-white p-3 rounded shadow">
                   <h2 class="fw-bold mb-4">Update Product</h2>
-                  <form
+                  <form method="post" action="/api/admin/editProduct"
                     id="updateProductForm"
                   >
                     <div class="row">
@@ -169,35 +169,35 @@
         formData.append('category', category);
         formData.append('popular', popular);
 
-        try {
-          const response = await fetch('http://localhost:8080/api/admin/editProduct/<%= data.id %>', {
-            method: 'PUT',
-            body: formData,
-          });
+        // try {
+        //   const response = await fetch('http://localhost:8080/api/admin/editProduct/<%= data.id %>', {
+        //     method: 'PUT',
+        //     body: formData,
+        //   });
 
-          const data = await response.json();
-          if (data.statusCode === 200) {
-            Swal.fire({
-              title: `Success`,
-              text: `${data?.message}`,
-              icon: 'success',
-            });
-          } else {
-            Swal.fire({
-              title: `Issue Occurred`,
-              text: `${data?.message}`,
-              icon: 'error',
-            });
-          }
-          console.log(data);
-        } catch (error) {
-          console.log(error);
-          Swal.fire({
-            title: `Failed`,
-            text: `An error occurred while processing your request`,
-            icon: 'error',
-          });
-        }
+        //   const data = await response.json();
+        //   if (data.statusCode === 200) {
+        //     Swal.fire({
+        //       title: `Success`,
+        //       text: `${data?.message}`,
+        //       icon: 'success',
+        //     });
+        //   } else {
+        //     Swal.fire({
+        //       title: `Issue Occurred`,
+        //       text: `${data?.message}`,
+        //       icon: 'error',
+        //     });
+        //   }
+        //   console.log(data);
+        // } catch (error) {
+        //   console.log(error);
+        //   Swal.fire({
+        //     title: `Failed`,
+        //     text: `An error occurred while processing your request`,
+        //     icon: 'error',
+        //   });
+        // }
       });        
     </script>
   </body>
