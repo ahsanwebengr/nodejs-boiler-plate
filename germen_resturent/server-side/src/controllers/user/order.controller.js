@@ -1,12 +1,13 @@
 import { Order } from '../../models/user/order.model.js';
 import { ApiError } from '../../utils/ApiError.js';
 import { ApiResponse } from '../../utils/ApiResponse.js';
-
+import JWT from "jsonwebtoken"
+import cookiesParser from "cookie-parser"
 const createOrder = async (req, res) => {
   try {
-    const order = req.body;
-
-    const newOrder = await Order.create(order);
+    const {email,phone,address,city,username,paymentMethod,productDetails} = req.body;
+    
+    const newOrder = await Order.create(Order);
 
     res.status(201).json(new ApiResponse(201, newOrder, 'Order generate successfully'));
   } catch (err) {
@@ -35,7 +36,7 @@ const editOrder = async (req, res) => {
 
     res
       .status(200)
-      .json(new ApiResponse(200, updatedOrder, 'Order updated successfully'));
+      .json(new ApiResponse(200, updatedOrder, `Order ${updatedOrder} successfully`));
   } catch (error) {
     console.error(error);
     if (error instanceof ApiError) {
@@ -119,4 +120,97 @@ const getSingleOrders = async (req, res) => {
   }
 };
 
-export { createOrder, editOrder, deleteOrder, getOrders, getSingleOrders };
+
+const addToCart = async (req,res)=>{
+  try {
+  //console.log("the body of order is:",req.body)
+  let {order,orderToken} = req.body;
+  console.log("🚀 ~ addToCart ~ order:", order)
+  let totalQuantity = 1;
+  let orders = []
+  const secretKey = 'hsigfsdgsfdiuuo8uw4656';
+  if(orderToken != ""){
+    let tokenDecode = JWT.decode(orderToken)
+    console.log("🚀 ~ addToCart ~ tokenDecode:", tokenDecode)
+    tokenDecode.orders.forEach(element => {
+      if(element.productId === order.productId ){
+        res.status(200).json(new ApiResponse(200,'FOOD IS ALREADY ADDED'));
+      }
+      totalQuantity = totalQuantity +  parseInt(element.Quenty)
+      console.log("🚀 ~ addToCart ~ element:", element)
+      orders.push(element)
+    });
+  }  
+  
+  orders.push(order)
+  //console.log("THE Decode Token is:",tokenDecode)
+  const payload = {
+     orders: orders,
+     totalQuantity: totalQuantity
+    };
+    
+l    
+    const token = JWT.sign(payload, secretKey, { expiresIn });
+    
+   // console.log('Generated JWT:', token);
+
+    res.cookie("order", token);
+    res.status(200).json(new ApiResponse(200,'Order addtocart',token));
+    
+    
+  } catch (error) {
+    console.log("The error is",error)
+  }
+}
+
+// const editCart = async (req,res)=>{
+//   try {
+//   //console.log("the body of order is:",req.body)
+//   let {order,orderToken} = req.body;
+//   console.log("🚀 ~ addToCart ~ order:", order)
+//   let totalQuantity = 1;
+//   let orders = []
+//   const secretKey = 'hsigfsdgsfdiuuo8uw4656';
+//   if(orderToken != ""){
+//     let tokenDecode = JWT.decode(orderToken)
+//     console.log("🚀 ~ addToCart ~ tokenDecode:", tokenDecode)
+//     tokenDecode.orders.forEach(element => {
+//       if(element.productId === order.productId ){
+//         res.status(200).json(new ApiResponse(200,'FOOD IS ALREADY ADDED'));
+//       }
+//       totalQuantity = totalQuantity +  parseInt(element.Quenty)
+//       console.log("🚀 ~ addToCart ~ element:", element)
+//       orders.push(element)
+//     });
+//   }  
+  
+//   orders.push(order)
+//   //console.log("THE Decode Token is:",tokenDecode)
+//   const payload = {
+//      orders: orders,
+//      totalQuantity: totalQuantity
+//     };
+    
+//     const expiresIn = '5000h';
+    
+//     const token = JWT.sign(payload, secretKey, { expiresIn });
+    
+//    // console.log('Generated JWT:', token);
+
+//     res.cookie("order", token);
+//     res.status(200).json(new ApiResponse(200,'Order addtocart',token));
+    
+    
+//   } catch (error) {
+//     console.log("The error is",error)
+//   }
+// }
+
+// getCart
+
+const getCart = async(req,res)=>{
+let orderToken = JWT.decode(req.body.orderToken)
+   console.log("🚀 ~ getCart ~ orderToken:", orderToken)
+   res.send(orderToken)
+}
+export { createOrder, editOrder, deleteOrder, getOrders, getSingleOrders,addToCart,getCart };

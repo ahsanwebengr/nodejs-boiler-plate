@@ -4,20 +4,20 @@ const productSchema = new Schema(
   {
     name: {
       type: String,
-      required: [true, 'Product name required'],
+      //required: [true, 'Product name required'],
     },
     unitPrice: {
       type: Number,
-      required: [true, 'Unit Price required'],
+      //required: [true, 'Unit Price required'],
       min: [0, 'Unit Price must be a positive number'],
     },
     description: {
       type: String,
-      required: [true, 'Description required'],
+      //required: [true, 'Description required'],
     },
     category: {
       type: String,
-      required: [true, 'Category is required'],
+      //required: [true, 'Category is required'],
       //   enum: ['Burger', 'Pizza', 'Drink', 'Fries', 'Other'],
       //   default: 'Other',
     },

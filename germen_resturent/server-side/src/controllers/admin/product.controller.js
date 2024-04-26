@@ -1,7 +1,9 @@
 import { Product } from '../../models/admin/product.model.js';
+import { Order } from "../../models/user/order.model.js";
 import { ApiError } from '../../utils/ApiError.js';
 import { ApiResponse } from '../../utils/ApiResponse.js';
-
+import fs from "fs"
+//import fil from "../../../products.json"
 const createProduct = async (req, res) => {
   try {
     const { name, unitPrice, description, category, imageUrl, size, discount } = req.body;
@@ -40,14 +42,41 @@ const createProduct = async (req, res) => {
 
 const allProducts = async (req, res) => {
   try {
-    const products = await Product.find();
+    console.log("The catoury name is:",req.query.tabName)
+    if(req.query.tabName===undefined){
+      const products = await Product.find();
+
+      res.status(200).json(new ApiResponse(200, products, 'Product Data'));
+    }else{
+      const products = await Product.find({"category":req.query.tabName});
 
     res.status(200).json(new ApiResponse(200, products, 'Product Data'));
+    }
+    
+    
   } catch (err) {
     console.log(err);
     throw new ApiError(500, 'Some error occurred while getting products');
   }
 };
+
+const getCategoires = async (req, res) => {
+  try {    
+    const products = await Product.find();
+
+    const categories = products.map(product => product.category);
+
+    const uniqueCategories = [...new Set(categories)];
+
+    console.log("🚀 ~ getCategoires ~ uniqueCategories:", uniqueCategories);
+
+    res.status(200).json(new ApiResponse(200, uniqueCategories, 'All Caregoires'));
+  } catch (err) {
+    console.log(err);
+    throw new ApiError(500, 'Some error occurred while getting products');
+  }
+};
+
 
 const singleProduct = async (req, res) => {
   try {
@@ -87,6 +116,8 @@ const updateProduct = async (req, res) => {
       size,
     };
     console.log('🚀 ~ updateProduct ~ updateData:', req.body);
+    updateData.imageUrl = req.file.filename || '';
+
 
     const product = await Product.findByIdAndUpdate(id, updateData);
     if (!product) {
@@ -130,4 +161,24 @@ const deleteProduct = async (req, res) => {
   }
 };
 
-export { createProduct, allProducts, singleProduct, updateProduct, deleteProduct };
+
+const getOrders = async (req, res) => {
+  let page = req.query.page || 1;
+  let limt = req.query.limt || 20;
+  let skip = page * limt;
+  let status = req.query.status
+  let orders = await Order.find({ orderStatus: status }).limt(limt).skip(skip).sort({ timestamps: 1 })
+  res.status(200).json(new ApiResponse(200, orders, 'Get Order  Successfully'));
+}
+const changeStatus = async (req, res) => {
+  let status = req.body.status;
+  let id = req.params.id;
+  let order = await Order.findById(id);
+  order.orderStatus = status;
+  await order.save();
+  res.status(200).json(new ApiResponse(200, 'Update Order Successfully'));
+}
+
+export { createProduct, allProducts, singleProduct, updateProduct, deleteProduct, getOrders, changeStatus, getCategoires };
+
+

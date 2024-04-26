@@ -5,12 +5,17 @@ const orderSchema = new Schema(
     username: {
       type: String,
       required: [true, 'Username is required'],
-    },
+    }, 
     email: {
       type: String,
       trim: true,
       lowercase: true,
       required: [true, 'Email address is required'],
+    },
+    orderStatus : {
+      type: String,
+      enum :["NEW","ACCEPETEC","REJECTED","INPROCESS","COMPLETED"],
+      default :"NEW",        
     },
     address: {
       type: String,

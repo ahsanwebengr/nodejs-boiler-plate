@@ -153,6 +153,7 @@
       updateProductForm.addEventListener('submit', async e => {
         e.preventDefault();
         const name = document.querySelector('#productName').value;
+        console.log("🚀 ~ name:", name)
         const unitPrice = document.querySelector('#price').value;
         const discount = document.querySelector('#discount').value;
         const imageFile = document.querySelector('#formFile').files[0];
@@ -161,6 +162,7 @@
         const popular = document.querySelector('#popular').value;
 
         const formData = new FormData();
+        console.log("🚀 ~ formData:", formData)
         formData.append('name', name);
         formData.append('unitPrice', unitPrice);
         formData.append('discount', discount);
@@ -169,35 +171,35 @@
         formData.append('category', category);
         formData.append('popular', popular);
 
-        // try {
-        //   const response = await fetch('http://localhost:8080/api/admin/editProduct/<%= data.id %>', {
-        //     method: 'PUT',
-        //     body: formData,
-        //   });
+        try {
+          const response = await fetch('http://localhost:8080/api/admin/editProduct/<%= data.id %>', {
+            method: 'PUT',
+            body: formData,
+          });
 
-        //   const data = await response.json();
-        //   if (data.statusCode === 200) {
-        //     Swal.fire({
-        //       title: `Success`,
-        //       text: `${data?.message}`,
-        //       icon: 'success',
-        //     });
-        //   } else {
-        //     Swal.fire({
-        //       title: `Issue Occurred`,
-        //       text: `${data?.message}`,
-        //       icon: 'error',
-        //     });
-        //   }
-        //   console.log(data);
-        // } catch (error) {
-        //   console.log(error);
-        //   Swal.fire({
-        //     title: `Failed`,
-        //     text: `An error occurred while processing your request`,
-        //     icon: 'error',
-        //   });
-        // }
+          const data = await response.json();
+          if (data.statusCode === 200) {
+            Swal.fire({
+              title: `Success`,
+              text: `${data?.message}`,
+              icon: 'success',
+            });
+          } else {
+            Swal.fire({
+              title: `Issue Occurred`,
+              text: `${data?.message}`,
+              icon: 'error',
+            });
+          }
+          console.log(data);
+        } catch (error) {
+          console.log(error);
+          Swal.fire({
+            title: `Failed`,
+            text: `An error occurred while processing your request`,
+            icon: 'error',
+          });
+        }
       });        
     </script>
   </body>
