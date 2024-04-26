@@ -1,7 +1,7 @@
 [{
   "_id": {
     "$oid": "661de2ef6cdb2630b4f587d6"
-  },
+  }, 
   "id": "01",
   "name": "Chicken Curry",
   "description": "Hähnchenbrustfilet zubereitet in einer Currysauce mit Zwiebeln, Tomaten und Ingwer",
