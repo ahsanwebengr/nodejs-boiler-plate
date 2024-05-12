@@ -10,7 +10,7 @@ app.use(bodyParser.json());
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-app.get('/api/v1', (req, res) => {
+app.get('/', (req, res) => {
   res.send('Welcome to the Google!');
 });
 

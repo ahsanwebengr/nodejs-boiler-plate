@@ -1,5 +1,11 @@
 import { Router } from 'express';
-import { createUser, getUser } from '../controllers/user.controller.js';
+import {
+  createUser,
+  getUsers,
+  updateUser,
+  deleteUser,
+  getUserById,
+} from '../controllers/user.controller.js';
 
 const router = Router();
 
@@ -19,7 +25,7 @@ const router = Router();
  *               items:
  *                 $ref: '#/components/schemas/User'
  */
-router.get('/', getUser);
+router.get('/', getUsers);
 
 /**
  * @swagger
@@ -39,6 +45,10 @@ router.get('/', getUser);
  *       '400':
  *         description: Bad request, user creation failed
  */
+router.get('/:userId', getUserById);
+
 router.post('/', createUser);
+router.put('/:userId', updateUser);
+router.delete('/:userId', deleteUser);
 
 export default router;
