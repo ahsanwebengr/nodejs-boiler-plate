@@ -2,6 +2,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import swaggerUi from 'swagger-ui-express';
 import userRoutes from './routes/user.route.js';
+import postRoutes from './routes/post.route.js';
 import swaggerSpec from './swaggerConfig.js';
 
 const app = express();
@@ -15,5 +16,6 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api/v1/users', userRoutes);
+app.use('/api/v1/posts', postRoutes);
 
 export default app;

@@ -39,6 +39,10 @@ const userSchema = new Schema(
     refreshToken: {
       type: String,
     },
+    posts: [{
+      type: Schema.Types.ObjectId,
+      ref: 'Post',
+    }]
   },
   {
     timestamps: true,

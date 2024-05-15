@@ -8,7 +8,7 @@ const getUsers = async (req, res) => {
     if (req.query.username) {
       users = await User.find({ username: req.query.username });
     } else {
-      users = await User.find();
+      users = await User.find().populate('posts')
     }
     return res
       .status(200)
@@ -44,6 +44,7 @@ const createUser = async (req, res) => {
       password,
       coverImage,
       refreshToken,
+      posts
     } = req.body;
 
     if (!username || !email || !fullName || !avatar || !password) {
@@ -67,6 +68,7 @@ const createUser = async (req, res) => {
       password,
       coverImage,
       refreshToken,
+      posts
     });
 
     return res
@@ -102,11 +104,11 @@ const deleteUser = async (req, res) => {
   try {
     const userId = req.params.userId;
 
-    const user = await User.findByIdAndDelete(userId);
-
     if (!user) {
       return res.status(404).json(new ApiResponse(404, null, 'User not found'));
     }
+
+    const user = await User.findByIdAndDelete(userId);
 
     return res
       .status(200)
