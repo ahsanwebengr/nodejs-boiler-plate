@@ -1,7 +1,7 @@
 import { User } from '../models/user.model.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { ApiError } from '../utils/ApiError.js';
-import UserValidation from '../utils/validations/users.js';
+import { UserUpdateSchema } from '../utils/validations/users.js';
 
 const getUsers = async (req, res) => {
   try {
@@ -59,66 +59,14 @@ const getUserById = async (req, res) => {
   }
 };
 
-const createUser = async (req, res) => {
-  try {
-    const {
-      username,
-      email,
-      fullName,
-      avatar,
-      password,
-      coverImage,
-      refreshToken,
-      posts,
-    } = req.body;
-
-    const { error } = UserValidation.validate(req.body);
-
-    if (error) {
-      return res
-        .status(400)
-        .json(
-          new ApiResponse(
-            400,
-            null,
-            `Validation error: ${error.details[0].message}`
-          )
-        );
-    }
-
-    const existingUser = await User.findOne({ $or: [{ username }, { email }] });
-    if (existingUser) {
-      return res
-        .status(400)
-        .json(new ApiResponse(400, null, 'Username or email already exists'));
-    }
-
-    const user = await User.create({
-      username,
-      email,
-      fullName,
-      avatar,
-      password,
-      coverImage,
-      refreshToken,
-      posts,
-    });
-
-    return res
-      .status(201)
-      .json(new ApiResponse(201, user, 'User created successfully'));
-  } catch (error) {
-    console.error('Error while creating user:', error);
-    throw new ApiError(500, 'Internal Server Error');
-  }
-};
-
 const updateUser = async (req, res) => {
   try {
     const userId = req.params.userId;
-    const userBody = req.body;
+    const userBody = { ...req.body };
 
-    const { error } = UserValidation.validate(userBody);
+    delete userBody.password;
+
+    const { error } = UserUpdateSchema.validate(userBody);
 
     if (error) {
       return res
@@ -132,7 +80,7 @@ const updateUser = async (req, res) => {
         );
     }
 
-    const user = await User.findByIdAndUpdate(userId, userBody);
+    const user = await User.findByIdAndUpdate(userId, userBody, { new: true });
 
     if (!user) {
       return res.status(404).json(new ApiResponse(404, null, 'User not found'));
@@ -140,10 +88,10 @@ const updateUser = async (req, res) => {
 
     return res
       .status(200)
-      .json(new ApiResponse(200, 'User updated successfully'));
+      .json(new ApiResponse(200, user, 'User updated successfully'));
   } catch (error) {
     console.error('Error while updating user:', error);
-    throw new ApiError(500, 'Internal Server Error');
+    return res.status(500).json(new ApiError(500, 'Internal Server Error'));
   }
 };
 
@@ -151,19 +99,16 @@ const deleteUser = async (req, res) => {
   try {
     const userId = req.params.userId;
 
+    const user = await User.findByIdAndDelete(userId);
     if (!user) {
       return res.status(404).json(new ApiResponse(404, null, 'User not found'));
     }
 
-    const user = await User.findByIdAndDelete(userId);
-
-    return res
-      .status(204)
-      .json(new ApiResponse(200, user, 'User deleted successfully'));
+    return res.status(204).json(new ApiResponse(204, user, 'User deleted successfully'));
   } catch (error) {
     console.error('Error while deleting user:', error);
     throw new ApiError(500, 'Internal Server Error');
   }
 };
 
-export { getUsers, createUser, updateUser, deleteUser, getUserById };
+export { getUsers, updateUser, deleteUser, getUserById };

@@ -1,15 +1,14 @@
-import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { User } from '../models/user.model.js';
 import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
-import UserValidation from '../utils/validations/users.js';
+import { UserCreationSchema } from '../utils/validations/users.js';
 
 const registerUser = async (req, res) => {
   try {
     const { username, email, fullName, avatar, password, posts } = req.body;
 
-    const { error } = UserValidation.validate(req.body);
+    const { error } = UserCreationSchema.validate(req.body);
     if (error) {
       return res
         .status(400)
@@ -29,15 +28,12 @@ const registerUser = async (req, res) => {
         .json(new ApiResponse(400, null, 'Username or email already exists'));
     }
 
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-
     const user = await User.create({
       username,
       email,
       fullName,
       avatar,
-      password: hashedPassword,
+      password,
       posts,
     });
 
@@ -63,12 +59,13 @@ const loginUser = async (req, res) => {
   try {
     const user = await User.findOne({ email });
     if (!user) {
-        return res.status(400).json({
-            success: false,
-            message: 'Invalid Email Address',
-        });
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid Email Address',
+      });
     }
-    const isMatch = await bcrypt.compare(password, user.password);
+
+    const isMatch = await user.isPasswordCorrect(password);
     if (!isMatch) {
       return res.status(400).json({
         success: false,
@@ -76,10 +73,7 @@ const loginUser = async (req, res) => {
       });
     }
 
-    const payload = { user: { id: user.id } };
-    const token = jwt.sign(payload, process.env.JWT_SECRET, {
-      expiresIn: '1h',
-    });
+    const token = user.generateAccessToken();
 
     return res.json({
       success: true,

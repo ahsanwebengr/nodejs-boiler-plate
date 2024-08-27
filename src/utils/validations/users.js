@@ -1,6 +1,6 @@
 import Joi from 'joi';
 
-const UserValidation = Joi.object({
+const baseUserSchema = Joi.object({
   username: Joi.string()
     .pattern(/^[a-z0-9_]+$/, 'lowercase alphanumeric with underscore')
     .min(3)
@@ -28,11 +28,10 @@ const UserValidation = Joi.object({
     'string.max': 'Full Name should have at most 50 characters',
   }),
 
-  avatar: Joi.string().uri().required().messages({
-    'string.uri': 'Enter a valid URL',
-    'any.required': 'Avatar is required',
-  }),
+  posts: Joi.array().items(Joi.string()).optional(),
+});
 
+const UserCreationSchema = baseUserSchema.append({
   password: Joi.string()
     .pattern(
       /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{8,}$/,
@@ -41,13 +40,13 @@ const UserValidation = Joi.object({
     .required()
     .messages({
       'string.pattern.base':
-        'Password must be at least 8 characters long, contain at least one uppercase letter, one number, and one special character',
-      'any.required': 'Password is required',
+        'Password must be at least 8 characters long, contain at least one uppercase letter, one number, and one special character.',
+      'any.required': 'Password is required.',
     }),
-
-  coverImage: Joi.string().uri().optional(),
-  refreshToken: Joi.string().optional(),
-  posts: Joi.array().items(Joi.string()).optional(),
 });
 
-export default UserValidation;
+const UserUpdateSchema = baseUserSchema.append({
+  password: Joi.string().optional(),
+});
+
+export { UserCreationSchema, UserUpdateSchema };
