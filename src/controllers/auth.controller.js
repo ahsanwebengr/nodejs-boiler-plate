@@ -28,7 +28,7 @@ const registerUser = async (req, res) => {
         .json(new ApiResponse(400, null, 'Username or email already exists'));
     }
 
-    const user = await User.create({
+    await User.create({
       username,
       email,
       fullName,
@@ -37,16 +37,10 @@ const registerUser = async (req, res) => {
       posts,
     });
 
-    const payload = { user: { id: user.id } };
-    const token = jwt.sign(payload, process.env.JWT_SECRET, {
-      expiresIn: '1h',
-    });
 
     return res
       .status(201)
-      .json(
-        new ApiResponse(201, { user, token }, 'User registered successfully')
-      );
+      .json(new ApiResponse(201, 'User registered successfully'));
   } catch (error) {
     console.error('Error while registering user:', error);
     throw new ApiError(500, 'Internal Server Error');
