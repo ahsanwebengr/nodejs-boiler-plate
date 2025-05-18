@@ -1,19 +1,42 @@
 import jwt from 'jsonwebtoken';
+import { MESSAGES, STATUS_CODES } from '../constants/index.js';
+import Users from '../models/user.model.js';
+import { asyncHandler, handleError } from '../utils/index.js';
+import { ACCESS_TOKEN_SECRET } from '../configs/env.config.js';
 
-const auth = (req, res, next) => {
-  const token = req.header('x-auth-token');
+export const verifyJWT = (roles = ['User']) =>
+  asyncHandler(async (req, _, next) => {
+    try {
+      const token = req.headers.authorization?.split(' ')[1];
+      if (!token) {
+        return handleError(
+          next,
+          MESSAGES.UNAUTHORIZED,
+          STATUS_CODES.UNAUTHORIZED
+        );
+      }
+      const decodedToken = jwt.verify(token, ACCESS_TOKEN_SECRET);
 
-  if (!token) {
-    return res.status(401).json({ msg: 'No token, authorization denied' });
-  }
+      const user = await Users.findById(decodedToken?._id).select('-password');
 
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded.user;
-    next();
-  } catch (err) {
-    res.status(401).json({ msg: 'Token is not valid' });
-  }
-};
-
-export default auth;
+      if (!user) {
+        return handleError(
+          next,
+          MESSAGES.UNAUTHORIZED,
+          STATUS_CODES.UNAUTHORIZED
+        );
+      }
+      if (roles.includes(user?.role)) {
+        req.user = user;
+        next();
+      } else {
+        return handleError(next, MESSAGES.FORBIDDEN, STATUS_CODES.FORBIDDEN);
+      }
+    } catch {
+      return handleError(
+        next,
+        MESSAGES.UNAUTHORIZED,
+        STATUS_CODES.UNAUTHORIZED
+      );
+    }
+  });

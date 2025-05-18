@@ -1,48 +1,43 @@
-import mongoose, { Schema } from 'mongoose';
+import { Schema, model } from 'mongoose';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import {
+  ACCESS_TOKEN_SECRET,
+  ACCESS_TOKEN_EXPIRY
+} from '../configs/env.config.js';
 
 const userSchema = new Schema(
   {
-    username: {
+    fullName: {
       type: String,
       required: true,
-      unique: true,
-      lowercase: true,
-      trim: true,
-      index: true,
+      trim: true
     },
     email: {
       type: String,
       required: true,
       unique: true,
-      lowercase: true,
-      trim: true,
-    },
-    fullName: {
-      type: String,
-      required: true,
-      trim: true,
-      index: true,
-    },
-    avatar: {
-      type: String,
-      required: true,
+      lowercase: true
     },
     password: {
       type: String,
-      required: [true, 'Password is required'],
+      select: false
     },
-    posts: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: 'Post',
-      },
-    ],
+    role: {
+      type: String,
+      enum: ['Admin', 'User'],
+      default: 'User'
+    },
+    accessToken: {
+      type: [String],
+      default: []
+    },
+    refreshToken: {
+      type: [String],
+      default: []
+    }
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
 
 userSchema.pre('save', async function (next) {
@@ -61,25 +56,15 @@ userSchema.methods.generateAccessToken = function () {
     {
       _id: this._id,
       email: this.email,
-      username: this.username,
-      fullName: this.fullName,
+      role: this.role
     },
-    process.env.ACCESS_TOKEN_SECRET,
+    ACCESS_TOKEN_SECRET,
     {
-      expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
-    }
-  );
-};
-userSchema.methods.generateRefreshToken = function () {
-  return jwt.sign(
-    {
-      _id: this._id,
-    },
-    process.env.REFRESH_TOKEN_SECRET,
-    {
-      expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
+      expiresIn: ACCESS_TOKEN_EXPIRY
     }
   );
 };
 
-export const User = mongoose.model('User', userSchema);
+const Users = model('User', userSchema);
+
+export default Users;

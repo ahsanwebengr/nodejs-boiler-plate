@@ -1,98 +1,56 @@
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import { User } from '../models/user.model.js';
-import { ApiError } from '../utils/ApiError.js';
-import { ApiResponse } from '../utils/ApiResponse.js';
-import UserValidation from '../utils/validations/users.js';
+import { asyncHandler, checkField, sendResponse } from '../utils/index.js';
+import { userDB } from '../instances/db.instance.js';
+import { MESSAGES, STATUS_CODES } from '../constants/index.js';
 
-const registerUser = async (req, res) => {
-  try {
-    const { username, email, fullName, avatar, password, posts } = req.body;
+const register = asyncHandler(async (req, res) => {
+  const { fullName, email, password } = req.body;
 
-    const { error } = UserValidation.validate(req.body);
-    if (error) {
-      return res
-        .status(400)
-        .json(
-          new ApiResponse(
-            400,
-            null,
-            `Validation error: ${error.details[0].message}`
-          )
-        );
-    }
+  const user = await userDB.findOne({ email });
 
-    const existingUser = await User.findOne({ $or: [{ username }, { email }] });
-    if (existingUser) {
-      return res
-        .status(400)
-        .json(new ApiResponse(400, null, 'Username or email already exists'));
-    }
+  checkField(user, 'User with this email already exist');
 
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+  await userDB.create({
+    fullName,
+    email,
+    password
+  });
 
-    const user = await User.create({
-      username,
-      email,
-      fullName,
-      avatar,
-      password: hashedPassword,
-      posts,
-    });
+  sendResponse(res, STATUS_CODES.CREATED, MESSAGES.SUCCESS);
+});
 
-    const payload = { user: { id: user.id } };
-    const token = jwt.sign(payload, process.env.JWT_SECRET, {
-      expiresIn: '1h',
-    });
-
-    return res
-      .status(201)
-      .json(
-        new ApiResponse(201, { user, token }, 'User registered successfully')
-      );
-  } catch (error) {
-    console.error('Error while registering user:', error);
-    throw new ApiError(500, 'Internal Server Error');
-  }
-};
-
-const loginUser = async (req, res) => {
+const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
-  try {
-    const user = await User.findOne({ email });
-    if (!user) {
-        return res.status(400).json({
-            success: false,
-            message: 'Invalid Email Address',
-        });
-    }
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid Password',
-      });
-    }
+  const user = await userDB.findOne({ email }, '+password');
+  checkField(!user, 'Invalid email or password');
 
-    const payload = { user: { id: user.id } };
-    const token = jwt.sign(payload, process.env.JWT_SECRET, {
-      expiresIn: '1h',
-    });
+  const isPasswordCorrect = await user.isPasswordCorrect(password);
+  checkField(!isPasswordCorrect, 'Invalid email or password');
 
-    return res.json({
-      success: true,
-      token,
-      message: 'Login successful',
-    });
-  } catch (err) {
-    console.error('Error during login:', err);
-    return res.status(500).json({
-      success: false,
-      message: 'Internal Server Error',
-    });
-  }
-};
+  const accessToken = user.generateAccessToken();
+  user.accessToken.push(accessToken);
 
-export { registerUser, loginUser };
+  await user.save();
+
+  sendResponse(res, STATUS_CODES.SUCCESS, MESSAGES.SUCCESS, {
+    accessToken
+  });
+});
+
+const logout = asyncHandler(async (req, res) => {
+  const accessToken = req?.headers['authorization']?.split(' ')[1];
+  const userId = req.user._id;
+
+  checkField(!accessToken, 'You are already logged out');
+
+  const user = await userDB.updateByQuery(
+    { _id: userId, accessToken },
+    { $pull: { accessToken } }
+  );
+
+  checkField(!user, 'User not found or session expired');
+
+  sendResponse(res, STATUS_CODES.SUCCESS, 'Logged Out Success');
+});
+
+export { register, login, logout };

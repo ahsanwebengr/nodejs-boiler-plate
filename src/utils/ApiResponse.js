@@ -1,10 +1,14 @@
 class ApiResponse {
-    constructor(statusCode, data, message = "Success") {
-        this.statusCode = statusCode;
-        this.data = data;
-        this.message = message;
-        this.success = statusCode < 400;
+  constructor(status, message = 'Success', data = {}, success = true) {
+    this.status = status;
+    this.message = message;
+    this.success = success;
+
+    // Assign each key-value pair from the `data` object to the instance
+    if (data && typeof data === 'object') {
+      Object.assign(this, data);
     }
+  }
 }
 
-export { ApiResponse };
+export default ApiResponse;
