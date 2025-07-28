@@ -4,10 +4,9 @@ import { MESSAGES, STATUS_CODES } from '../constants/index.js';
 
 const register = asyncHandler(async (req, res) => {
   const { fullName, email, password } = req.body;
-
   const user = await userDB.findOne({ email });
 
-  checkField(user, 'User with this email already exist');
+  checkField(user, 'User with this email already exist' , STATUS_CODES.CONFLICT);
 
   await userDB.create({
     fullName,
