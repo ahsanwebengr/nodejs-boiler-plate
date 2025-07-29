@@ -6,7 +6,7 @@ const register = asyncHandler(async (req, res) => {
   const { fullName, email, password } = req.body;
   const user = await userDB.findOne({ email });
 
-  checkField(user, 'User with this email already exist' , STATUS_CODES.CONFLICT);
+  checkField(user, 'User with this email already exist', STATUS_CODES.CONFLICT);
 
   await userDB.create({
     fullName,
@@ -52,4 +52,10 @@ const logout = asyncHandler(async (req, res) => {
   sendResponse(res, STATUS_CODES.SUCCESS, 'Logged Out Success');
 });
 
-export { register, login, logout };
+const test = asyncHandler(async (req, res) => {
+  sendResponse(res, STATUS_CODES.SUCCESS, MESSAGES.SUCCESS, {
+    text: 'Random Text'.repeat(1000000)
+  });
+});
+
+export { register, login, logout, test };
