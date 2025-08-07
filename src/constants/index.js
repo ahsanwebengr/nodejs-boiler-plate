@@ -1,3 +1,5 @@
+import { NODE_ENV } from '../configs/env.config.js';
+
 export const AUTH_CONSTANTS = {
   OTP_EXPIRY: 2 * 60 * 1000,
   OTP_LENGTH: 6,
@@ -38,4 +40,13 @@ export const MESSAGES = {
 export const ROLES = {
   ADMIN: 'ADMIN',
   USER: 'USER'
+};
+
+const isProd = NODE_ENV === 'production';
+
+export const COOKIE_OPTIONS = {
+  httpOnly: true,
+  secure: isProd,
+  sameSite: isProd ? 'strict' : 'lax',
+  maxAge: 7 * 24 * 60 * 60 * 1000 // optional: 7 days
 };

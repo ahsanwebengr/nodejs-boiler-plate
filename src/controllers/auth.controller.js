@@ -1,6 +1,6 @@
 import { asyncHandler, checkField, sendResponse } from '../utils/index.js';
 import { userDB } from '../instances/db.instance.js';
-import { MESSAGES, STATUS_CODES } from '../constants/index.js';
+import { COOKIE_OPTIONS, MESSAGES, STATUS_CODES } from '../constants/index.js';
 
 const register = asyncHandler(async (req, res) => {
   const { fullName, email, password } = req.body;
@@ -31,13 +31,16 @@ const login = asyncHandler(async (req, res) => {
 
   await user.save();
 
+  res.cookie('accessToken', accessToken, COOKIE_OPTIONS);
+
   sendResponse(res, STATUS_CODES.SUCCESS, MESSAGES.SUCCESS, {
     accessToken
   });
 });
 
 const logout = asyncHandler(async (req, res) => {
-  const accessToken = req?.headers['authorization']?.split(' ')[1];
+  const accessToken =
+    req.cookies?.accessToken || req.headers.authorization?.split(' ')[1];
   const userId = req.user._id;
 
   checkField(!accessToken, 'You are already logged out');
@@ -48,6 +51,8 @@ const logout = asyncHandler(async (req, res) => {
   );
 
   checkField(!user, 'User not found or session expired');
+
+  res.clearCookie('accessToken', COOKIE_OPTIONS);
 
   sendResponse(res, STATUS_CODES.SUCCESS, 'Logged Out Success');
 });

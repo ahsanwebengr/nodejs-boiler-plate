@@ -1,14 +1,12 @@
 import mongoose from 'mongoose';
-import { DB_NAME, MONGODB_URI } from './env.config.js';
+import { MONGODB_URI } from './env.config.js';
 import logger from '../utils/logger.js';
 
 const connectDB = async () => {
   try {
-    const connectionInstance = await mongoose.connect(
-      `${MONGODB_URI}/${DB_NAME}`
-    );
+    const connectionInstance = await mongoose.connect(MONGODB_URI);
     logger.info(
-      `\n MongoDB connected ✅ !! DB HOST: ${connectionInstance.connection.host}`
+      `MongoDB connected ✅ !! DB HOST: ${connectionInstance.connection.host}`
     );
   } catch (error) {
     logger.error('MONGODB connection FAILED', error);

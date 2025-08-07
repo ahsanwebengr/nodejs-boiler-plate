@@ -42,7 +42,7 @@ app.use(cookieParser());
 app.use(compression());
 app.use(helmet());
 
-app.use('/api/v1', router);
+app.use('/api', router);
 app.all('*', (req, res, next) => {
   next(new ApiError(STATUS_CODES.NOT_FOUND, 'Route not found'));
 });

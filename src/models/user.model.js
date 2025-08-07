@@ -31,10 +31,6 @@ const userSchema = new Schema(
     accessToken: {
       type: [String],
       default: []
-    },
-    refreshToken: {
-      type: [String],
-      default: []
     }
   },
   { timestamps: true }
