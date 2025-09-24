@@ -1,10 +1,7 @@
 import { Schema, model } from 'mongoose';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import {
-  ACCESS_TOKEN_SECRET,
-  ACCESS_TOKEN_EXPIRY
-} from '../configs/env.config.js';
+import { ACCESS_TOKEN_SECRET } from '../configs/env.config.js';
 
 const userSchema = new Schema(
   {
@@ -31,7 +28,20 @@ const userSchema = new Schema(
     accessToken: {
       type: [String],
       default: []
-    }
+    },
+    resetPassword: {
+      otp: String,
+      expiry: Date,
+      verified: { type: Boolean, default: false },
+      updatedAt: { type: Date }
+    },
+
+    provider: {
+      type: String,
+      enum: ['google', 'local'],
+      default: 'local'
+    },
+    googleId: { type: String, unique: true }
   },
   { timestamps: true }
 );
@@ -53,10 +63,7 @@ userSchema.methods.generateAccessToken = function () {
       email: this.email,
       role: this.role
     },
-    ACCESS_TOKEN_SECRET,
-    {
-      expiresIn: ACCESS_TOKEN_EXPIRY
-    }
+    ACCESS_TOKEN_SECRET
   );
 };
 

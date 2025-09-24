@@ -1,12 +1,13 @@
-import { asyncHandler, checkField, sendResponse } from '../utils/index.js';
 import { userDB } from '../instances/db.instance.js';
+import { UserService } from '../services/user.service.js';
+import { fireBaseAdminConfig } from '../configs/firebase.config.js';
+import { asyncHandler, checkField, sendResponse } from '../utils/index.js';
 import { COOKIE_OPTIONS, MESSAGES, STATUS_CODES } from '../constants/index.js';
 
 const register = asyncHandler(async (req, res) => {
   const { fullName, email, password } = req.body;
-  const user = await userDB.findOne({ email });
 
-  checkField(user, 'User with this email already exist', STATUS_CODES.CONFLICT);
+  await UserService.checkEmailExists(email);
 
   await userDB.create({
     fullName,
@@ -20,16 +21,7 @@ const register = asyncHandler(async (req, res) => {
 const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
-  const user = await userDB.findOne({ email }, '+password');
-  checkField(!user, 'Invalid email or password');
-
-  const isPasswordCorrect = await user.isPasswordCorrect(password);
-  checkField(!isPasswordCorrect, 'Invalid email or password');
-
-  const accessToken = user.generateAccessToken();
-  user.accessToken.push(accessToken);
-
-  await user.save();
+  const accessToken = await UserService.loginUser(email, password);
 
   res.cookie('accessToken', accessToken, COOKIE_OPTIONS);
 
@@ -39,28 +31,78 @@ const login = asyncHandler(async (req, res) => {
 });
 
 const logout = asyncHandler(async (req, res) => {
+  const userId = req.user._id.toString();
   const accessToken =
     req.cookies?.accessToken || req.headers.authorization?.split(' ')[1];
-  const userId = req.user._id;
 
   checkField(!accessToken, 'You are already logged out');
 
-  const user = await userDB.updateByQuery(
-    { _id: userId, accessToken },
-    { $pull: { accessToken } }
-  );
+  const user = await userDB.removeAccessToken(userId, accessToken);
 
   checkField(!user, 'User not found or session expired');
 
   res.clearCookie('accessToken', COOKIE_OPTIONS);
 
-  sendResponse(res, STATUS_CODES.SUCCESS, 'Logged Out Success');
+  sendResponse(res, STATUS_CODES.SUCCESS, 'Logged out Successfully');
 });
 
-const test = asyncHandler(async (req, res) => {
-  sendResponse(res, STATUS_CODES.SUCCESS, MESSAGES.SUCCESS, {
-    text: 'Random Text'.repeat(1000000)
-  });
+const forgotPassword = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+
+  const otp = await UserService.forgotPassword(email);
+
+  //   await sendEmail({
+  //     to: email,
+  //     subject: 'Reset Your Password',
+  //     htmlContent: generateOtpEmail(otp)
+  //   });
+
+  sendResponse(res, STATUS_CODES.SUCCESS, `OTP sent to ${email}`);
 });
 
-export { register, login, logout, test };
+const verifyResetOTP = asyncHandler(async (req, res) => {
+  const { email, otp } = req.body;
+
+  await UserService.verifyResetOTP(email, otp);
+
+  sendResponse(res, STATUS_CODES.SUCCESS, 'OTP verified successfully');
+});
+
+const resetPassword = asyncHandler(async (req, res) => {
+  const { email, newPassword } = req.body;
+
+  await UserService.resetPassword(email, newPassword);
+
+  sendResponse(res, STATUS_CODES.SUCCESS, 'Password reset successful');
+});
+
+const loginWithGoogle = asyncHandler(async (req, res) => {
+  const { idToken } = req.body;
+
+  checkField(!idToken, 'ID Token is required');
+  const decodedToken = await fireBaseAdminConfig.auth().verifyIdToken(idToken);
+  const { email, name, uid } = decodedToken;
+
+  await UserService.checkEmailExists(email);
+
+  const user = {
+    googleId: uid,
+    email,
+    fullName: name,
+    provider: 'google'
+  };
+
+  await userDB.create(user);
+
+  sendResponse(res, STATUS_CODES.SUCCESS, 'User authenticated successfully');
+});
+
+export {
+  register,
+  login,
+  logout,
+  forgotPassword,
+  verifyResetOTP,
+  resetPassword,
+  loginWithGoogle
+};

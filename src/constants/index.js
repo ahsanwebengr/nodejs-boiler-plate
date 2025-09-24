@@ -38,8 +38,8 @@ export const MESSAGES = {
 };
 
 export const ROLES = {
-  ADMIN: 'ADMIN',
-  USER: 'USER'
+  ADMIN: 'Admin',
+  USER: 'User'
 };
 
 const isProd = NODE_ENV === 'production';

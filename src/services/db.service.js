@@ -91,14 +91,6 @@ export class DBQuery {
     return doc;
   }
 
-  async updateMany(query, data) {
-    return await this.model.updateMany(query, data);
-  }
-
-  async replaceOne(query, data) {
-    return await this.model.replaceOne(query, data);
-  }
-
   async findOneAndUpdate(query, update, options = { new: true }) {
     const doc = await this.model.findOneAndUpdate(query, update, options);
     if (!doc) throw httpErrors(404, `${this.model.modelName} not found`);
@@ -111,25 +103,17 @@ export class DBQuery {
     return doc;
   }
 
-  async findOneAndReplace(query, replacement, options = { new: true }) {
-    const doc = await this.model.findOneAndReplace(query, replacement, options);
-    if (!doc) throw httpErrors(404, `${this.model.modelName} not found`);
-    return doc;
-  }
-
-  async findOneOrCreate(query, data) {
-    return await this.model.findOneAndUpdate(query, data, {
-      upsert: true,
-      new: true,
-      setDefaultsOnInsert: true
-    });
-  }
-
-  async updateByQuery(filter, updateData) {
-    const doc = await this.model.findOneAndUpdate(filter, updateData, {
-      new: true
-    });
-    if (!doc) throw httpErrors(404, `${this.model.modelName} not found`);
+  async removeAccessToken(userId, accessToken) {
+    const doc = await this.model.findOneAndUpdate(
+      { _id: userId, accessToken },
+      { $pull: { accessToken } },
+      { new: true }
+    );
+    if (!doc)
+      throw httpErrors(
+        404,
+        `${this.model.modelName} not found or token invalid`
+      );
     return doc;
   }
 }
